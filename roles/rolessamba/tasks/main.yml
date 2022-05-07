@@ -1,0 +1,25 @@
+---
+# tasks file for rolessamba
+- name: Install samba
+  become: true
+  yum:
+    name: samba
+    state: present
+  tags: install
+- name: Change Samba config file
+  template:
+    src: smb.conf.j2
+    dest: /etc/samba/smb.conf
+    mode: 0644
+- name: Creates directory
+  file:
+    path: /{{ locate }}
+    state: directory
+- name: Configure service 
+  systemd:
+    name: smb
+    enabled: yes
+    state: started
+  tags: install
+  notify:
+    - restart samba
